@@ -1,0 +1,19 @@
+/* style.css */
+.task-list {
+    min-height: 50vh; /* Ensures empty columns still have a drop zone area */
+}
+
+.task-card {
+    cursor: grab;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.task-card:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+.task-card.dragging {
+    opacity: 0.5;
+    border: 2px dashed #6c757d !important; /* Visual feedback when dragging */
+}
