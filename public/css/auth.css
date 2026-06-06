@@ -1,0 +1,39 @@
+/* auth.css */
+body {
+    background-color: #11111b; /* Deep dark background */
+}
+
+.auth-card {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.auth-form { 
+    display: none; 
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+
+.auth-form.active { 
+    display: block; 
+}
+
+/* Subtle animation when switching forms */
+@keyframes slideUp { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+/* Fix input focus rings in dark mode */
+.form-control:focus {
+    background-color: #212529;
+    color: #fff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Make input group icons match focus state */
+.form-control:focus ~ .input-group-text,
+.input-group-text:has(+ .form-control:focus) {
+    border-color: #0d6efd;
+    color: #0d6efd !important;
+}

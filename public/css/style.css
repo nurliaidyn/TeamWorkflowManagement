@@ -1,0 +1,35 @@
+body { background-color: #11111b; }
+
+/* Kanban specific layouts --------------------------------------------------*/
+.kanban-scroll {
+    overflow-x: auto;
+    min-height: calc(100vh - 140px);
+}
+
+.kanban-column {
+    min-width: 320px;
+    max-width: 350px;
+}
+
+/* Task Card styling */
+.task-list { min-height: 200px; }
+.task-card {
+    cursor: grab;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.task-card:active { cursor: grabbing; transform: scale(0.98); }
+.task-card.dragging {
+    opacity: 0.5;
+    border: 2px dashed #6c757d !important;
+}
+
+
+/* Dashboard specific layouts --------------------------------------------------*/
+.hover-shadow { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.hover-shadow:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+
+
+/* Backlog specific layouts --------------------------------------------------*/
+.table-dark { --bs-table-bg: transparent; }
+tbody tr { cursor: pointer; transition: background-color 0.2s ease; }
+tbody tr:hover { background-color: rgba(255,255,255,0.05) !important; }
