@@ -16,8 +16,8 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-secondary bg-opacity-10 border-bottom border-secondary mb-4">
         <div class="container">
-            <a class="navbar-brand fs-6 text-secondary" href="dashboard.php">
-                <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+            <a class="btn btn-sm btn-outline-secondary border-secondary me-3" href="index.php?page=dashboard">
+                <i class="bi bi-arrow-left"></i> Back
             </a>
         </div>
     </nav>

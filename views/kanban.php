@@ -12,22 +12,38 @@
 <body class="text-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-secondary bg-opacity-10 border-bottom border-secondary mb-4">
-        <div class="container-fluid px-4">
+        <div class="container px-4">
             <div class="d-flex align-items-center">
                 <a class="btn btn-sm btn-outline-secondary border-secondary me-3" href="index.php?page=dashboard">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
                 <h5 class="m-0 fw-bold"><i class="bi bi-kanban me-2 text-primary"></i><?= htmlspecialchars($project['name']) ?></h5>
             </div>
-            <div class="d-flex align-items-center">
-                <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 32px; height: 32px;">
-                    <?= substr(htmlspecialchars($_SESSION['user_name']), 0, 1) ?>
-                </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="?page=profile" class="text-decoration-none d-flex align-items-center">
+                    <span class="text-secondary small fw-semibold border-bottom border-transparent hover-border-secondary transition-all me-3">
+                        Welcome, <?= htmlspecialchars($_SESSION['user_name'])   ?>
+                    </span>
+
+                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;" title="My Profile">
+                        <?= strtoupper(substr(htmlspecialchars($_SESSION['user_name']), 0, 1)) ?>
+                    </div>
+
+                </a>
+                <?php if (isset($_SESSION['system_role']) && $_SESSION['system_role'] === 'admin'): ?>
+                    <a href="?page=admin" class="btn btn-outline-danger btn-sm border-danger me-3">
+                        <i class="bi bi-shield-lock"></i> Admin Console
+                    </a>
+                <?php endif; ?>
+                
+                <a href="?page=logout" class="btn btn-outline-secondary btn-sm border-secondary">Sign Out</a>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid px-4 kanban-scroll d-flex gap-4 pb-4">
+    <div class="container px-4 kanban-scroll d-flex gap-4 pb-5">
+    <!-- <div class="container-fluid px-4 kanban-scroll d-flex gap-4 pb-5"> -->
+    <!-- <div class="container pb-5"> -->
         
         <?php 
         // Helper array to generate the columns cleanly without repeating HTML
@@ -78,6 +94,33 @@
             </div>
         <?php endforeach; ?>
 
+    </div>
+
+    <div class="modal fade" id="kanbanTaskModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark border-secondary text-light shadow-lg">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="modalTaskTitle">Task Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <div class="modal-body p-0">
+                    <div class="p-3" style="height: 350px; overflow-y: auto; background-color: #1a1a24;" id="chatHistory">
+                        <div class="text-center text-secondary mt-5">
+                            <div class="spinner-border spinner-border-sm" role="status"></div> Loading discussion...
+                        </div>
+                    </div>
+
+                    <div class="p-3 border-top border-secondary bg-dark">
+                        <form id="commentForm" class="d-flex gap-2">
+                            <input type="hidden" id="activeTaskId">
+                            <input type="text" id="commentInput" class="form-control bg-secondary bg-opacity-10 border-secondary text-light" placeholder="Ask a question or post an update..." autocomplete="off" required>
+                            <button type="submit" class="btn btn-primary px-4 fw-semibold"><i class="bi bi-send"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

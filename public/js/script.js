@@ -1,98 +1,109 @@
 // script.js
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Selectors
+    // ==========================================
+    // 1. SELECTORS & VARIABLES
+    // ==========================================
     const cards = document.querySelectorAll('.task-card');
-    const columns = document.querySelectorAll('.kanban-column'); // Make sure your HTML uses 'kanban-column'
+    const columns = document.querySelectorAll('.kanban-column'); 
     
-    // Check if modal exists on the page before initializing (prevents errors on other pages)
-    const modalElement = document.getElementById('taskModal');
+    // Chat & Modal Selectors
+    const modalElement = document.getElementById('kanbanTaskModal');
     const taskModal = modalElement ? new bootstrap.Modal(modalElement) : null;
+    const chatHistory = document.getElementById('chatHistory');
+    const commentForm = document.getElementById('commentForm');
+    const commentInput = document.getElementById('commentInput');
+    const activeTaskIdInput = document.getElementById('activeTaskId');
 
-    // Track where a card started in case the database update fails
     let originalColumn = null; 
+    let isDragging = false; // NEW: Flag to prevent modal from opening on drop
 
     // ==========================================
-    // DRAG AND DROP & API LOGIC
+    // 2. MAIN CARD LOGIC (Drag & Click)
     // ==========================================
-    
     cards.forEach(card => {
+        
         // --- DRAG START ---
         card.addEventListener('dragstart', () => {
+            isDragging = true; 
             card.classList.add('dragging');
-            originalColumn = card.closest('.kanban-column'); // Remember starting position
+            originalColumn = card.closest('.kanban-column'); 
         });
 
         // --- DRAG END & DATABASE FETCH ---
         card.addEventListener('dragend', () => {
             card.classList.remove('dragging');
             
-            const newColumn = card.closest('.kanban-column');
-            const newStatus = newColumn.dataset.status;
-            const taskId = card.id; // e.g., "task-101"
+            // NEW: Give the browser 100ms to ignore the 'click' event caused by dropping
+            setTimeout(() => { isDragging = false; }, 100);
             
-            // If the user dropped the card in the exact same column, do nothing
-            if (originalColumn === newColumn) return;
+            const newColumn = card.closest('.kanban-column');
+            if (!newColumn || originalColumn === newColumn) return; 
 
-            // Send data to PHP asynchronously 
+            const newStatus = newColumn.dataset.status;
+            const taskId = card.id; 
+
             fetch('controllers/update_task.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    task_id: taskId,
-                    new_status: newStatus
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_id: taskId, new_status: newStatus })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
                     console.log('Database confirmed:', data.message);
-                    if (typeof updateCounters === "function") updateCounters(); 
                 } else {
                     console.error('Server error:', data.message);
-                    revertCard(card, originalColumn); // Snap back on failure
+                    revertCard(card, originalColumn); 
                 }
             })
             .catch(error => {
                 console.error('Network error connecting to the API:', error);
-                revertCard(card, originalColumn); // Snap back on failure
+                revertCard(card, originalColumn); 
             });
         });
 
-        // ==========================================
-        // MODAL CLICK LOGIC
-        // ==========================================
-        
+        // --- CLICK TO OPEN CHAT MODAL ---
         card.addEventListener('click', (e) => {
-            // Prevent opening the modal if the user is just dragging the card
-            if (card.classList.contains('dragging') || !taskModal) return;
+            // NEW: If the user just dropped the card, abort opening the chat!
+            if (isDragging || !taskModal) return;
 
-            // Get the task ID and title from the clicked card
-            const taskId = card.id;
-            const taskTitle = card.querySelector('.card-text') ? card.querySelector('.card-text').innerText : 'Task Title';
+            const taskId = card.id.replace('task-', '');
+            const taskTitle = card.querySelector('.card-text') ? card.querySelector('.card-text').innerText : 'Task Details';
 
-            // Populate the modal inputs
-            document.getElementById('modalTaskId').value = taskId;
-            document.getElementById('modalTaskTitle').value = taskTitle;
-            document.getElementById('modalTaskDescription').value = "Loading description from database...";
-
-            // Show the modal
+            document.getElementById('modalTaskTitle').innerText = taskTitle;
+            activeTaskIdInput.value = taskId;
+            
+            chatHistory.innerHTML = '<div class="text-center text-secondary mt-5"><div class="spinner-border spinner-border-sm"></div> Loading discussion...</div>';
             taskModal.show();
+
+            fetch(`controllers/get_comments.php?task_id=${taskId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    renderComments(data.comments, data.current_user_id);
+                }
+            });
         });
     });
 
     // ==========================================
-    // COLUMN DROP ZONES
+    // 3. COLUMN DROP ZONES (FIXED)
     // ==========================================
-    
     columns.forEach(column => {
         column.addEventListener('dragover', e => {
-            e.preventDefault(); // Required to allow dropping
-            
-            // Add visual highlight to the column being hovered
+            e.preventDefault(); // REQUIRED to allow dropping
             column.classList.add('drag-over');
+        });
+
+        column.addEventListener('dragleave', () => {
+            column.classList.remove('drag-over');
+        });
+
+        // NEW: Only append the HTML element when the user lets go of the mouse
+        column.addEventListener('drop', e => {
+            e.preventDefault();
+            column.classList.remove('drag-over');
             
             const draggingCard = document.querySelector('.dragging');
             const taskList = column.querySelector('.task-list');
@@ -101,46 +112,88 @@ document.addEventListener("DOMContentLoaded", () => {
                 taskList.appendChild(draggingCard);
             }
         });
-
-        // Remove the visual highlight when the card leaves the column
-        column.addEventListener('dragleave', () => {
-            column.classList.remove('drag-over');
-        });
-
-        // Remove the visual highlight when the card is dropped
-        column.addEventListener('drop', () => {
-            column.classList.remove('drag-over');
-        });
     });
 
     // ==========================================
-    // MODAL SAVE ACTION
+    // 4. SUBMIT NEW COMMENT
     // ==========================================
-    
-    const saveBtn = document.getElementById('saveTaskChanges');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
-            const updatedId = document.getElementById('modalTaskId').value;
-            const updatedTitle = document.getElementById('modalTaskTitle').value;
+    if (commentForm) {
+        commentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
             
-            console.log(`Ready for PHP: Update task ${updatedId} with new title: ${updatedTitle}`);
+            const taskId = activeTaskIdInput.value;
+            const text = commentInput.value;
+            const submitBtn = commentForm.querySelector('button');
             
-            // Future: Add a fetch() request here to update the title/description in the DB!
-            
-            taskModal.hide();
+            submitBtn.disabled = true;
+
+            fetch('controllers/add_comment.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ task_id: taskId, comment_text: text })
+            })
+            .then(res => res.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                if (data.status === 'success') {
+                    commentInput.value = ''; 
+                    
+                    const newComment = {
+                        author_id: data.author_id,
+                        nickname: data.nickname,
+                        comment_text: text,
+                        created_at: data.created_at
+                    };
+                    
+                    appendCommentToUI(newComment, data.author_id);
+                    chatHistory.scrollTop = chatHistory.scrollHeight; 
+                }
+            });
         });
     }
 
     // ==========================================
-    // HELPER FUNCTIONS
+    // 5. HELPER FUNCTIONS
     // ==========================================
-    
     function revertCard(card, targetColumn) {
         if (targetColumn) {
             const taskList = targetColumn.querySelector('.task-list');
             taskList.appendChild(card);
             alert("Failed to save changes to the database. The card has been reverted.");
-            if (typeof updateCounters === "function") updateCounters();
         }
+    }
+
+    function renderComments(comments, currentUserId) {
+        chatHistory.innerHTML = ''; 
+        if (comments.length === 0) {
+            chatHistory.innerHTML = '<div class="text-center text-secondary mt-5">No comments yet. Start the conversation!</div>';
+            return;
+        }
+        comments.forEach(c => appendCommentToUI(c, currentUserId));
+        chatHistory.scrollTop = chatHistory.scrollHeight; 
+    }
+
+    function appendCommentToUI(comment, currentUserId) {
+        if (chatHistory.innerHTML.includes('No comments yet')) {
+            chatHistory.innerHTML = ''; 
+        }
+
+        const isMe = String(comment.author_id) === String(currentUserId);
+        const alignmentClass = isMe ? 'text-end' : 'text-start';
+        const bubbleColor = isMe ? 'bg-primary text-white' : 'bg-secondary bg-opacity-25 text-light';
+        const nameDisplay = isMe ? 'You' : comment.nickname;
+
+        const timeString = new Date(comment.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        const html = `
+            <div class="mb-3 ${alignmentClass}">
+                <div class="small text-secondary mb-1 px-1">${nameDisplay} <span class="ms-2 opacity-50" style="font-size: 0.7rem;">${timeString}</span></div>
+                <div class="d-inline-block p-2 px-3 rounded shadow-sm ${bubbleColor}" style="max-width: 85%; text-align: left;">
+                    ${comment.comment_text}
+                </div>
+            </div>
+        `;
+        
+        chatHistory.insertAdjacentHTML('beforeend', html);
     }
 });

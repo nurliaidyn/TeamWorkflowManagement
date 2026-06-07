@@ -3,35 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Admin - Project Alpha</title>
+    <title>Admin Console - Project Alpha</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body { background-color: #11111b; }
-        .table-dark { --bs-table-bg: transparent; }
-    </style>
+    <link rel="stylesheet" href="public/css/style.css">
 </head>
 <body class="text-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-secondary bg-opacity-10 border-bottom border-secondary mb-4">
         <div class="container">
-            <a class="navbar-brand fs-6 text-secondary" href="dashboard.php">
+            <a class="navbar-brand fs-6 text-secondary hover-white" href="index.php?page=dashboard">
                 <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
             </a>
-            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger ms-auto">Admin Access</span>
+            <span class="navbar-text fw-bold text-danger"><i class="bi bi-shield-lock me-2"></i>Admin Console</span>
         </div>
     </nav>
 
     <div class="container pb-5">
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <h2 class="fw-bold mb-1">Team Management</h2>
-                <p class="text-secondary m-0">Manage roles and system access.</p>
-            </div>
-            <button class="btn btn-success fw-semibold">
-                <i class="bi bi-person-plus me-1"></i> Invite User
-            </button>
-        </div>
+        <h2 class="fw-bold mb-4">User Management</h2>
 
         <div class="card bg-secondary bg-opacity-10 border-secondary shadow-sm">
             <div class="card-body p-0">
@@ -42,54 +31,39 @@
                                 <th class="text-secondary small text-uppercase pb-3 pt-3 ps-4 border-secondary">User</th>
                                 <th class="text-secondary small text-uppercase pb-3 pt-3 border-secondary">Email</th>
                                 <th class="text-secondary small text-uppercase pb-3 pt-3 border-secondary">System Role</th>
-                                <th class="text-secondary small text-uppercase pb-3 pt-3 border-secondary">Status</th>
-                                <th class="text-secondary small text-uppercase pb-3 pt-3 pe-4 text-end border-secondary">Actions</th>
+                                <th class="text-secondary small text-uppercase pb-3 pt-3 pe-4 text-end border-secondary">Account Status</th>
                             </tr>
                         </thead>
                         <tbody class="border-secondary">
-                            <tr>
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 35px; height: 35px;">N</div>
-                                        <span class="fw-semibold">Niko</span>
-                                    </div>
-                                </td>
-                                <td class="text-secondary small">niko@example.com</td>
-                                <td>
-                                    <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 140px;">
-                                        <option value="developer">Developer</option>
-                                        <option value="qa">QA Engineer</option>
-                                        <option value="pm">Product Manager</option>
-                                        <option value="admin" selected>Admin</option>
-                                    </select>
-                                </td>
-                                <td><span class="badge bg-success bg-opacity-25 text-success border border-success">Active</span></td>
-                                <td class="pe-4 text-end">
-                                    <button class="btn btn-sm btn-outline-secondary border-secondary" disabled>Current User</button>
-                                </td>
-                            </tr>
-                            
-                            <tr>
-                                <td class="ps-4 py-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-info text-white rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 35px; height: 35px;">J</div>
-                                        <span class="fw-semibold">Janar</span>
-                                    </div>
-                                </td>
-                                <td class="text-secondary small">janar@example.com</td>
-                                <td>
-                                    <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width: 140px;">
-                                        <option value="developer" selected>Developer</option>
-                                        <option value="qa">QA Engineer</option>
-                                        <option value="pm">Product Manager</option>
-                                        <option value="admin">Admin</option>
-                                    </select>
-                                </td>
-                                <td><span class="badge bg-success bg-opacity-25 text-success border border-success">Active</span></td>
-                                <td class="pe-4 text-end">
-                                    <button class="btn btn-sm btn-outline-danger border-danger"><i class="bi bi-trash"></i></button>
-                                </td>
-                            </tr>
+                            <?php foreach ($all_users as $u): ?>
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-semibold"><?= htmlspecialchars($u['full_name']) ?></div>
+                                        <div class="text-secondary small">@<?= htmlspecialchars($u['nickname']) ?></div>
+                                    </td>
+                                    <td><span class="text-secondary small"><?= htmlspecialchars($u['email']) ?></span></td>
+                                    
+                                    <td>
+                                        <select class="form-select form-select-sm bg-dark border-secondary text-light role-select" data-user-id="<?= $u['id'] ?>" style="width: auto;">
+                                            <option value="developer" <?= $u['system_role'] === 'developer' ? 'selected' : '' ?>>Developer</option>
+                                            <option value="pm" <?= $u['system_role'] === 'pm' ? 'selected' : '' ?>>Product Manager</option>
+                                            <option value="admin" <?= $u['system_role'] === 'admin' ? 'selected' : '' ?>>Admin</option>
+                                        </select>
+                                    </td>
+                                    
+                                    <td class="pe-4 text-end">
+                                        <?php if ($u['is_active'] == 1): ?>
+                                            <button class="btn btn-outline-danger border-secondary btn-sm status-toggle-btn" data-user-id="<?= $u['id'] ?>" data-current-status="1">
+                                                Deactivate
+                                            </button>
+                                        <?php else: ?>
+                                            <button class="btn btn-outline-success border-secondary btn-sm status-toggle-btn" data-user-id="<?= $u['id'] ?>" data-current-status="0">
+                                                Activate
+                                            </button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
@@ -98,5 +72,60 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Handle Role Changes
+            document.querySelectorAll('.role-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    const newRole = this.value;
+
+                    fetch('controllers/update_role.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ target_user_id: userId, new_role: newRole })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status !== 'success') {
+                            alert(data.message);
+                            location.reload(); // Revert UI on failure
+                        } else {
+                            // Flash green to show success
+                            this.style.backgroundColor = 'rgba(25, 135, 84, 0.2)';
+                            setTimeout(() => this.style.backgroundColor = '', 1000);
+                        }
+                    });
+                });
+            });
+
+            // 2. Handle Status Toggles
+            document.querySelectorAll('.status-toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    const currentStatus = parseInt(this.getAttribute('data-current-status'));
+                    const newStatus = currentStatus === 1 ? 0 : 1; // Flip the bit
+
+                    this.disabled = true;
+
+                    fetch('controllers/toggle_user_status.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ target_user_id: userId, new_status: newStatus })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            location.reload(); // Refresh the table to show updated badges
+                        } else {
+                            alert(data.message);
+                            this.disabled = false;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

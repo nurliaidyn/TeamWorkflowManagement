@@ -1,17 +1,32 @@
 <?php
 session_start();
-require_once 'config/db.php'; // Bring in your PDO connection
-
-
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1;
-    $_SESSION['user_name'] = 'Niko';
-}
+require_once 'config/db.php';
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
+$public_routes = ['login', 'register'];
+
+if (!isset($_SESSION['user_id']) && !in_array($page, $public_routes)) {
+    header("Location: index.php?page=login");
+    exit;
+}
+
+if ($page === 'logout') {
+    session_destroy();
+    header("Location: index.php?page=login");
+    exit;
+}
+
 switch ($page) {
+    case 'login':
+        require_once 'views/login.php';
+        break;
+        
+    case 'register':
+        require_once 'views/register.php';
+        break;
     case 'dashboard':
+        // 1. Fetch the user's projects
         $sql = "
             SELECT p.id, p.name, p.description, pm.project_role 
             FROM projects p
@@ -19,13 +34,31 @@ switch ($page) {
             WHERE pm.user_id = :user_id
             ORDER BY p.created_at DESC
         ";
-        
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':user_id' => $_SESSION['user_id']]);
-        
         $projects = $stmt->fetchAll(); 
         
+        // 2. Fetch available users for the "Assign Team" modal checkboxes
+        $stmtUsers = $pdo->prepare("SELECT id, nickname, full_name FROM users WHERE is_active = 1 AND id != :my_id ORDER BY nickname ASC");
+        $stmtUsers->execute([':my_id' => $_SESSION['user_id']]);
+        $available_users = $stmtUsers->fetchAll();
+        
+        // 3. Load the view
         require_once 'views/dashboard.php';
+        break;
+    case 'admin':
+        // 1. Double-check security
+        if (!isset($_SESSION['system_role']) || $_SESSION['system_role'] !== 'admin') {
+            header("Location: index.php?page=dashboard");
+            exit;
+        }
+
+        // 2. Fetch all users
+        $stmt = $pdo->query("SELECT id, full_name, nickname, email, system_role, is_active, created_at FROM users ORDER BY created_at DESC");
+        $all_users = $stmt->fetchAll();
+
+        // 3. Load the view
+        require_once 'views/admin.php';
         break;
 
     case 'board':
@@ -116,7 +149,24 @@ switch ($page) {
         require_once 'views/backlog.php';
 
         break;
+    case 'profile':
+        $stmt = $pdo->prepare("SELECT email, system_role, nickname, full_name FROM users WHERE id = :id");
+        $stmt->execute([':id' => $_SESSION['user_id']]);
+        $user_profile = $stmt->fetch();
 
+        $sql = "
+            SELECT t.id, t.title, t.status, p.id as project_id, p.name as project_name
+            FROM tasks t
+            JOIN projects p ON t.project_id = p.id
+            WHERE t.assignee_id = :user_id AND t.status != 'done'
+            ORDER BY t.status DESC, t.updated_at DESC
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':user_id' => $_SESSION['user_id']]);
+        $my_tasks = $stmt->fetchAll();
+
+        require_once 'views/profile.php';
+        break;
 
 }
 ?>

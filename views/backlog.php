@@ -16,7 +16,27 @@
             <a class="navbar-brand fs-6 text-secondary hover-white" href="index.php?page=dashboard">
                 <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
             </a>
+            <div class="d-flex align-items-center gap-3">
+                <a href="?page=profile" class="text-decoration-none d-flex align-items-center">
+                    <span class="text-secondary small fw-semibold border-bottom border-transparent hover-border-secondary transition-all me-3">
+                        Welcome, <?= htmlspecialchars($_SESSION['user_name'])   ?>
+                    </span>
+
+                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2 shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;" title="My Profile">
+                        <?= strtoupper(substr(htmlspecialchars($_SESSION['user_name']), 0, 1)) ?>
+                    </div>
+
+                </a>
+                <?php if (isset($_SESSION['system_role']) && $_SESSION['system_role'] === 'admin'): ?>
+                    <a href="?page=admin" class="btn btn-outline-danger btn-sm border-danger me-3">
+                        <i class="bi bi-shield-lock"></i> Admin Console
+                    </a>
+                <?php endif; ?>
+                
+                <a href="?page=logout" class="btn btn-outline-secondary btn-sm border-secondary">Sign Out</a>
+            </div>
         </div>
+
     </nav>
 
     <div class="container pb-5">
@@ -69,7 +89,6 @@
                                         <td class="pe-4 text-end">
                                             <div class="btn-group shadow-sm">
                                                 <button class="btn btn-outline-primary border-secondary btn-sm to-sprint-btn" data-task-id="<?= $task['id'] ?>">To Sprint</button>
-                                                <button class="btn btn-outline-secondary border-secondary btn-sm edit-btn" data-task-id="<?= $task['id'] ?>" title="Edit Task"><i class="bi bi-pencil"></i></button>
                                                 <button class="btn btn-outline-danger border-secondary btn-sm delete-btn" data-task-id="<?= $task['id'] ?>" title="Delete Task"><i class="bi bi-trash"></i></button>
                                             </div>
                                         </td>
@@ -201,23 +220,6 @@
                             alert(data.message);
                         }
                     });
-                    return;
-                }
-                // EDIT HANDLE
-                const editBtn = event.target.closest('.edit-btn');
-                if (editBtn) {
-                    const taskId = editBtn.getAttribute('data-task-id');
-                    const row = document.getElementById(`row-${taskId}`);
-                    
-                    // Grab the current title directly from the HTML table row
-                    const currentTitle = row.querySelector('.fw-semibold').innerText;
-                    
-                    // Populate the modal
-                    document.getElementById('editTaskId').value = taskId;
-                    document.getElementById('editTaskTitle').value = currentTitle;
-                    
-                    // Show the modal
-                    new bootstrap.Modal(document.getElementById('editTaskModal')).show();
                     return;
                 }
 
@@ -371,7 +373,6 @@
                         <td class="pe-4 text-end">
                             <div class="btn-group shadow-sm">
                                 <button class="btn btn-outline-primary border-secondary btn-sm to-sprint-btn" data-task-id="${data.id}">To Sprint</button>
-                                <button class="btn btn-outline-secondary border-secondary btn-sm edit-btn" data-task-id="${data.id}" title="Edit Task"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-outline-danger border-secondary btn-sm delete-btn" data-task-id="${data.id}" title="Delete Task"><i class="bi bi-trash"></i></button>
                             </div>
                         </td>
@@ -396,7 +397,6 @@
                         <td class="pe-4 text-end">
                             <div class="btn-group shadow-sm">
                                 <button class="btn btn-outline-primary border-secondary btn-sm to-sprint-btn" data-task-id="${data.id}">To Sprint</button>
-                                <button class="btn btn-outline-secondary border-secondary btn-sm edit-btn" data-task-id="${data.id}" title="Edit Task"><i class="bi bi-pencil"></i></button>
                                 <button class="btn btn-outline-danger border-secondary btn-sm delete-btn" data-task-id="${data.id}" title="Delete Task"><i class="bi bi-trash"></i></button>
                             </div>
                         </td>
