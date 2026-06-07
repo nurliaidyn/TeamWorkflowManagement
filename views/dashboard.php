@@ -13,10 +13,10 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-secondary bg-opacity-10 border-bottom border-secondary mb-5">
         <div class="container">
-            <a class="navbar-brand fw-bold" href=""><i class="bi bi-braces text-primary"></i> Project Alpha</a>
+            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-braces text-primary"></i> Project Alpha</a>
             <div class="d-flex align-items-center">
-                <span class="me-3 text-secondary small">Welcome, Niko</span>
-                <a href="auth.php" class="btn btn-outline-secondary btn-sm border-secondary">Sign Out</a>
+                <span class="me-3 text-secondary small">Welcome, <?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                <a href="?page=logout" class="btn btn-outline-secondary btn-sm border-secondary">Sign Out</a>
             </div>
         </div>
     </nav>
@@ -30,91 +30,44 @@
         </div>
 
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card bg-secondary bg-opacity-10 border-secondary h-100 hover-shadow">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title fw-bold m-0">Finance Management App</h5>
-                            <span class="badge bg-success bg-opacity-25 text-success border border-success">Active</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-4">
-                            Core application for tracking transactions and financial forecasting.
-                        </p>
-                        
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between text-secondary small mb-1">
-                                <span>Sprint Progress</span>
-                                <span>65%</span>
-                            </div>
-                            <div class="progress bg-dark mb-4" style="height: 6px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 65%;"></div>
-                            </div>
-                            
-                            <div class="d-flex gap-2">
-                                <a href="kanban.php" class="btn btn-primary btn-sm flex-grow-1">Board</a>
-                                <a href="backlog.php" class="btn btn-outline-secondary border-secondary btn-sm flex-grow-1">Backlog</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card bg-secondary bg-opacity-10 border-secondary h-100 hover-shadow">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title fw-bold m-0">2D Side-Scroller Engine</h5>
-                            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning">Planning</span>
-                        </div>
-                        <p class="card-text text-secondary small mb-4">
-                            HTML5 Canvas and JavaScript game engine development.
-                        </p>
-                        
-                        <div class="mt-auto">
-                            <div class="d-flex justify-content-between text-secondary small mb-1">
-                                <span>Sprint Progress</span>
-                                <span>15%</span>
-                            </div>
-                            <div class="progress bg-dark mb-4" style="height: 6px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 15%;"></div>
-                            </div>
-                            
-                            <div class="d-flex gap-2">
-                                <a href="kanban.php" class="btn btn-primary btn-sm flex-grow-1">Board</a>
-                                <a href="backlog.php" class="btn btn-outline-secondary border-secondary btn-sm flex-grow-1">Backlog</a>
+            
+            <?php if (!empty($projects)): ?>
+                <?php foreach ($projects as $project): ?>
+                    <div class="col-md-4">
+                        <div class="card bg-secondary bg-opacity-10 border-secondary h-100 hover-shadow">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title fw-bold m-0"><?= htmlspecialchars($project['name']) ?></h5>
+                                    
+                                    <?php if ($project['project_role'] === 'lead'): ?>
+                                        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger">Lead</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-success bg-opacity-25 text-success border border-success">Active</span>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <p class="card-text text-secondary small mb-4">
+                                    <?= htmlspecialchars($project['description']) ?>
+                                </p>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex gap-2 mt-4">
+                                        <a href="?page=board&project_id=<?= $project['id'] ?>" class="btn btn-primary btn-sm flex-grow-1">Board</a>
+                                        <a href="?page=backlog&project_id=<?= $project['id'] ?>" class="btn btn-outline-secondary border-secondary btn-sm flex-grow-1">Backlog</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-folder-x display-1 text-secondary mb-3"></i>
+                    <h4 class="text-secondary">No projects found.</h4>
+                    <p class="text-secondary">You haven't been assigned to any workspaces yet.</p>
                 </div>
+            <?php endif; ?>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="newProjectModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark border-secondary text-light shadow-lg">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title fw-bold">Create New Project</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small text-uppercase fw-bold">Project Name</label>
-                            <input type="text" class="form-control bg-dark border-secondary text-light" placeholder="e.g., API Gateway Migration" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-secondary small text-uppercase fw-bold">Description</label>
-                            <textarea class="form-control bg-dark border-secondary text-light" rows="3" placeholder="Briefly describe the goal..." required></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-outline-secondary border-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary fw-semibold">Create Project</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
