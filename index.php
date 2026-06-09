@@ -26,12 +26,12 @@ switch ($page) {
         require_once 'views/register.php';
         break;
     case 'dashboard':
-        // 1. Fetch the user's projects
+        // 1. Fetch the user's ACTIVE projects only
         $sql = "
             SELECT p.id, p.name, p.description, pm.project_role 
             FROM projects p
             JOIN project_members pm ON p.id = pm.project_id
-            WHERE pm.user_id = :user_id
+            WHERE pm.user_id = :user_id AND p.is_active = 1
             ORDER BY p.created_at DESC
         ";
         $stmt = $pdo->prepare($sql);
@@ -47,17 +47,24 @@ switch ($page) {
         require_once 'views/dashboard.php';
         break;
     case 'admin':
-        // 1. Double-check security
         if (!isset($_SESSION['system_role']) || $_SESSION['system_role'] !== 'admin') {
             header("Location: index.php?page=dashboard");
             exit;
         }
 
-        // 2. Fetch all users
+        // 1. Fetch Users
         $stmt = $pdo->query("SELECT id, full_name, nickname, email, system_role, is_active, created_at FROM users ORDER BY created_at DESC");
         $all_users = $stmt->fetchAll();
 
-        // 3. Load the view
+        // 2. Fetch Projects (Joining the users table to see who created it)
+        $stmtProjects = $pdo->query("
+            SELECT p.id, p.name, p.description, p.is_active, p.created_at, u.nickname as creator_name 
+            FROM projects p 
+            LEFT JOIN users u ON p.created_by = u.id 
+            ORDER BY p.created_at DESC
+        ");
+        $all_projects = $stmtProjects->fetchAll();
+
         require_once 'views/admin.php';
         break;
 
