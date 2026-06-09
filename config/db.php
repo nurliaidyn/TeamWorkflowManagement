@@ -1,6 +1,6 @@
 <?php
 
-$host = '127.0.0.1';
+$host = 'localhost';
 $db   = 'workflow'; // The name of the database you created in MySQL
 $user = 'root';         // Your MySQL username (usually 'root' on local servers)
 $pass = '';             // Your MySQL password (usually blank on XAMPP)
