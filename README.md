@@ -27,6 +27,7 @@
 - [Özellikler](#-özellikler)
 - [Teknolojiler](#-teknolojiler)
 - [Mimari](#-mimari)
+- [Video Linki](#-video-linki)
 - [Ekran Görüntüleri](#-ekran-görüntüleri)
 - [Kurulum](#-kurulum)
 - [Yapılandırma](#-yapılandırma)
