@@ -161,6 +161,9 @@ project-alpha/
 
 ---
 
+## 📸 Video Linki
+https://drive.google.com/file/d/1ZK-hAz7mF4bmEyc4bh_eWj3xySJTgSM-/view?usp=sharing
+
 ## 📸 Ekran Görüntüleri
 
 <div align="center">
