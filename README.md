@@ -1,188 +1,457 @@
-```markdown
-# 🚀 Project Alpha - SaaS Proje ve Görev Yönetim Sistemi
+<div align="center">
 
-Project Alpha, yazılım ekipleri ve şirketler için tasarlanmış, çok kiracılı (multi-tenant) yapıyı desteklemeye hazır, modern ve güvenli bir Kanban tabanlı proje yönetim platformudur. 
+# 🚀 Project Alpha
 
-Rol tabanlı erişim kontrolü (RBAC), sürükle-bırak Kanban panoları, görev içi canlı sohbet ve gelişmiş bir Admin konsolu ile ekiplerin verimliliğini artırmayı hedefler.
+### SaaS Proje & Görev Yönetim Sistemi
 
-## ✨ Temel Özellikler
+[![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://mysql.com)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white)](https://getbootstrap.com)
+[![Lisans](https://img.shields.io/badge/Lisans-MIT-green.svg)](LICENSE)
 
-- **🔒 Güvenli Kimlik Doğrulama:** Şifreleme (bcrypt) ve oturum (session) yönetimi ile güvenli giriş/kayıt sistemi.
-- **👥 Rol Tabanlı Erişim (RBAC):** Admin, Product Manager (PM) ve Developer rolleri ile yetkilendirme.
-- **📋 Kanban Board:** Vanilla JavaScript ve HTML5 Drag & Drop API ile akıcı görev taşıma deneyimi.
-- **💬 Görev İçi İletişim:** Görev kartlarına tıklandığında açılan özel modallar üzerinden takım içi anlık yorumlaşma ve tartışma (Chat) sistemi.
-- **🏢 Çalışma Alanı (Workspace) Yönetimi:** Proje oluşturma, projeye takım üyesi atama ve projeleri yönetme.
-- **⚙️ Gelişmiş Admin Konsolu:** - Kullanıcı yetkilerini (rollerini) anında değiştirme.
-  - Personel işten ayrıldığında verileri bozmadan hesabı askıya alma (Soft Delete / Deactivate).
-  - Silinen/Kapatılan projeleri arşivleme ve panodan gizleme.
-- **🎨 Modern Arayüz:** Bootstrap 5 ile geliştirilmiş, tamamen duyarlı (responsive) Dark Mode tasarımı.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/de36fcb6-37f8-4548-8ce7-720d8e28f2ab" width="80%" alt="Dashboard Önizleme" />
+</p>
 
-## 🛠️ Kullanılan Teknolojiler
+**Yazılım ekipleri için modern, güvenli, Kanban tabanlı proje yönetim platformu.**
 
-**Frontend:**
-- HTML5 & CSS3
-- Bootstrap 5.3
-- Vanilla JavaScript (ES6+)
-- Fetch API (Asenkron veri iletişimi)
+[Özellikler](#-özellikler) • [Ekran Görüntüleri](#-ekran-görüntüleri) • [Kurulum](#-kurulum) • [Kullanım](#-kullanım) • [Katkıda Bulunma](#-katkıda-bulunma)
 
-**Backend:**
-- PHP 8.x (Nesne Yönelimli ve PDO kullanılarak)
-- Mimarisi: Özel Router (index.php üzerinden) ve Micro-Controller yapısı
+</div>
 
-**Veritabanı:**
-- MySQL / MariaDB
-- İlişkisel veritabanı tasarımı (Foreign Keys, Cascade Deletes)
+---
 
-## 📁 Proje Yapısı
+## 📋 İçindekiler
 
-```text
+- [Hakkında](#-hakkında)
+- [Özellikler](#-özellikler)
+- [Teknolojiler](#-teknolojiler)
+- [Mimari](#-mimari)
+- [Ekran Görüntüleri](#-ekran-görüntüleri)
+- [Kurulum](#-kurulum)
+- [Yapılandırma](#-yapılandırma)
+- [Kullanım](#-kullanım)
+- [API Uç Noktaları](#-api-uç-noktaları)
+- [Veritabanı Şeması](#-veritabanı-şeması)
+- [Güvenlik](#-güvenlik)
+- [Katkıda Bulunma](#-katkıda-bulunma)
+- [Lisans](#-lisans)
+
+---
+
+## 🎯 Hakkında
+
+**Project Alpha**, yazılım ekipleri ve şirketler için tasarlanmış, çok kiracılı (multi-tenant) yapıya hazır, rol tabanlı proje yönetim sistemidir.
+
+**Güvenlik**, **kullanılabilirlik** ve **performans** odaklı olarak geliştirilmiştir. Projeleri, görevleri ve ekip iletişimini tek bir yerden yönetmenizi sağlar.
+
+### Neden Project Alpha?
+
+- 🔒 **Güvenlik Öncelikli** — bcrypt şifreleme, oturum yönetimi ve RBAC
+- ⚡ **Hafif** — Ağır framework yok, saf PHP + vanilla JS
+- 🎨 **Modern Arayüz** — Karanlık mod, duyarlı tasarım, sezgisel UX
+- 🏗️ **Ölçeklenebilir** — Çok kiracılı mimari, SaaS dağıtımına hazır
+
+---
+
+## ✨ Özellikler
+
+### 🔐 Kimlik Doğrulama & Yetkilendirme
+- **bcrypt** ile güvenli giriş/kayıt sistemi
+- Güvenlik middleware'i ile oturum tabanlı kimlik doğrulama
+- Üç rol ile **Rol Tabanlı Erişim Kontrolü (RBAC)**:
+  | Rol | Yetkiler |
+  |------|------------|
+  | 👑 **Admin** | Tam sistem erişimi, kullanıcı yönetimi, proje arşivleme |
+  | 📊 **Product Manager** | Proje oluşturma, ekip atama, görev denetimi |
+  | 💻 **Developer** | Görev yönetimi, yorum yapma, Kanban panosu erişimi |
+
+### 📋 Kanban Panosu
+- Yerel **HTML5 Drag & Drop API** ile sürükle-bırak görev yönetimi
+- Gerçek zamanlı durum güncellemeleri (Yapılacak → Devam Ediyor → Tamamlandı)
+- Akıcı vanilla JavaScript animasyonları
+- Görev önceliği ve atama görselleştirmesi
+
+### 💬 Gerçek Zamanlı İşbirliği
+- Özel modal pencereler üzerinden **görev içi sohbet sistemi**
+- Belirli görevlere bağlı ekip tartışmaları
+- Zaman damgalı yorum geçmişi
+
+### 🏢 Çalışma Alanı Yönetimi
+- Birden fazla proje oluşturma ve yönetme
+- Projelere ekip üyesi atama
+- Proje arşivleme ve soft-delete işlevselliği
+
+### ⚙️ Admin Konsolu
+- **Kullanıcı Yönetimi**: Kullanıcı rollerini anında değiştirme
+- **Hesap Askıya Alma**: Veri kaybı olmadan soft delete/devre dışı bırakma
+- **Proje Arşivleme**: Kapatılan projeleri panodan gizleme
+- **Sistem Genel Bakış**: Tüm projeleri ve kullanıcıları izleme
+
+### 🎨 Arayüz/UX
+- Tamamen duyarlı **Karanlık Mod** tasarımı
+- Bootstrap 5.3 ile özel tema
+- Mobil uyumlu arayüz
+- Temiz, modern estetik
+
+---
+
+## 🛠️ Teknolojiler
+
+### Frontend
+| Teknoloji | Amaç |
+|-----------|---------|
+| HTML5 & CSS3 | Yapı ve stil |
+| Bootstrap 5.3 | UI framework'ü |
+| Vanilla JavaScript (ES6+) | Etkileşim, Sürükle-Bırak, Fetch API |
+| Fetch API | Asenkron sunucu iletişimi |
+
+### Backend
+| Teknoloji | Amaç |
+|-----------|---------|
+| PHP 8.x | Sunucu tarafı mantığı (OOP + PDO) |
+| Özel Router | `index.php` üzerinden URL yönlendirme |
+| Mikro-Kontrolör | Hafif mimari |
+| Oturum Yönetimi | Güvenli kimlik doğrulama |
+
+### Veritabanı
+| Teknoloji | Amaç |
+|-----------|---------|
+| MySQL / MariaDB | İlişkisel veri depolama |
+| PDO | Güvenli veritabanı soyutlama |
+| Foreign Keys | Veri bütünlüğü |
+| Cascade Deletes | Otomatik temizlik |
+
+---
+
+## 🏗️ Mimari
+
+```
 project-alpha/
 │
-├── config/
-│   └── db.php                 # Veritabanı PDO bağlantı ayarları
+├── 📁 config/
+│   └── db.php                    # PDO veritabanı bağlantısı
 │
-├── controllers/               # Asenkron (Fetch) işlemleri işleyen API dosyaları
-│   ├── auth_process.php       # Giriş ve kayıt işlemleri
-│   ├── create_project.php     # Yeni proje oluşturma ve takım atama
-│   ├── update_task.php        # Kanban sürükle-bırak durum güncellemeleri
-│   ├── add_comment.php        # Görev içi yorum ekleme
-│   ├── update_role.php        # (Admin) Kullanıcı yetki değiştirme
+├── 📁 controllers/               # API uç noktaları (asenkron işleyiciler)
+│   ├── auth_process.php          # Giriş & kayıt
+│   ├── create_project.php        # Proje oluşturma & ekip atama
+│   ├── update_task.php           # Kanban sürükle-bırak güncellemeleri
+│   ├── add_comment.php           # Görev yorumları
+│   ├── update_role.php           # Admin: rol yönetimi
 │   └── ...
 │
-├── public/
-│   ├── css/
-│   │   └── style.css          # Özel CSS ve Dark Theme ayarları
-│   └── js/
-│       └── script.js          # Modal kontrolleri, Drag & Drop ve Fetch istekleri
+├── 📁 public/
+│   ├── 📁 css/
+│   │   └── style.css             # Özel CSS + Karanlık Tema
+│   └── 📁 js/
+│       └── script.js             # Modallar, Sürükle-Bırak, Fetch
 │
-├── views/                     # Kullanıcı arayüzü dosyaları
+├── 📁 views/                      # UI şablonları
 │   ├── login.php
 │   ├── register.php
-│   ├── dashboard.php          # Aktif projelerin listelendiği ana sayfa
-│   ├── kanban.php             # Sürükle-bırak görev panosu
-│   ├── backlog.php            # Bekleyen görevler listesi
-│   └── admin.php              # Yetkili yönetim konsolu
+│   ├── dashboard.php             # Aktif projeler
+│   ├── kanban.php                # Görev panosu
+│   ├── backlog.php               # Bekleyen görevler
+│   └── admin.php                 # Admin konsolu
 │
-├── database.sql               # Veritabanı tabloları ve örnek veriler (İçe aktarılacak)
-└── index.php                  # Ana Router ve Güvenlik Middleware'i
-
+├── database.sql                   # Şema + örnek veriler
+├── index.php                      # Router + Güvenlik Middleware'i
+└── LICENSE
 ```
 
-## 🚀 Kurulum Adımları
-
-Projeyi kendi yerel ortamınızda (Localhost) çalıştırmak için aşağıdaki adımları izleyin:
-
-### 1. Gereksinimler
-
-* PHP 8.0 veya üzeri bir sunucu (XAMPP, MAMP, Laragon vb.)
-* MySQL Veritabanı
-
-### 2. Adımlar
-
-1. **Repoyu Klonlayın:**
-```bash
-git clone [https://github.com/kullanici-adiniz/project-alpha.git](https://github.com/kullanici-adiniz/project-alpha.git)
-cd project-alpha
-
-```
-
-
-2. **Veritabanını Hazırlayın:**
-* MySQL'de `project_alpha` (veya dilediğiniz bir isimde) yeni bir veritabanı oluşturun.
-* Proje ana dizinindeki `database.sql` (eğer dışa aktardıysanız) dosyasını bu veritabanına import edin.
-
-
-3. **Veritabanı Bağlantısını Ayarlayın:**
-* `config/db.php` dosyasını açın.
-* Veritabanı adı, kullanıcı adı ve şifre bilgilerinizi kendi sisteminize göre güncelleyin.
-
-
-4. **Uygulamayı Çalıştırın:**
-* Sunucunuzu başlatın ve tarayıcınızda uygulamanın bulunduğu dizine gidin (örneğin: `http://localhost/project-alpha`).
-
-
-
-### 👑 İlk Admin Hesabını Oluşturma
-
-Sistem güvenlik gereği dışarıdan doğrudan "Admin" kaydına izin vermez. Sistemin tüm özelliklerini test etmek için:
-
-1. Uygulama üzerinden normal bir hesap (Register) oluşturun.
-2. MySQL veritabanınıza (phpMyAdmin vb.) girin.
-3. `users` tablosunu açın ve kendi hesabınızın `system_role` sütununu `developer` yerine `admin` olarak değiştirin.
-4. Sayfayı yenilediğinizde üst menüde kırmızı renkli **Admin Console** butonunu göreceksiniz.
+---
 
 ## 📸 Ekran Görüntüleri
 
-## 📄 Lisans
+<div align="center">
 
-Bu proje [MIT Lisansı](https://www.google.com/search?q=LICENSE) altında lisanslanmıştır. Dilediğiniz gibi kullanabilir, geliştirebilir ve paylaşabilirsiniz.
+| Dashboard | Kanban Panosu | Admin Konsolu |
+|:---------:|:----------:|:-------------:|
+| <img src="https://github.com/user-attachments/assets/de36fcb6-37f8-4548-8ce7-720d8e28f2ab" width="250" /> | <img src="https://github.com/user-attachments/assets/c1505823-a050-47ac-8539-9c2be3b6838d" width="250" /> | <img src="https://github.com/user-attachments/assets/82d5d763-2916-4a86-8326-2235b7e793ae" width="250" /> |
+| **Proje Genel Bakış** | **Sürükle & Bırak Görevler** | **Kullanıcı Yönetimi** |
 
+| Görev Modalı |
+|:----------:|
+| <img src="https://github.com/user-attachments/assets/8e72e160-abed-43ce-8ecd-4b27f16da247" width="500" /> |
+| **Görev İçi Sohbet & Detaylar** |
+
+</div>
+
+---
+
+## 🚀 Kurulum
+
+### Gereksinimler
+
+- PHP 8.0+ (XAMPP, MAMP, Laragon veya herhangi bir PHP sunucusu)
+- MySQL 5.7+ veya MariaDB 10.3+
+- Web tarayıcısı (Chrome, Firefox, Safari, Edge)
+
+### Adım Adım Kurulum
+
+#### 1. Repoyu Klonlayın
+
+```bash
+git clone https://github.com/kullanici-adiniz/project-alpha.git
+cd project-alpha
 ```
 
+#### 2. Veritabanını Oluşturun
+
+```sql
+-- MySQL CLI veya phpMyAdmin kullanarak
+CREATE DATABASE project_alpha CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
-# 🚀 Project Alpha - SaaS Project and Task Management System
 
-Project Alpha is a modern and secure Kanban-based project management platform designed for software teams and companies, ready to support multi-tenant architecture. 
+#### 3. Şemayı İçe Aktarın
 
-It aims to increase team productivity with Role-Based Access Control (RBAC), drag-and-drop Kanban boards, in-task live chat, and an advanced Admin console.
+```bash
+# MySQL CLI kullanarak
+mysql -u root -p project_alpha < database.sql
 
-## ✨ Key Features
+# Veya phpMyAdmin GUI üzerinden içe aktarın
+```
 
-- **🔒 Secure Authentication:** Secure login/registration system with encryption (bcrypt) and session management.
-- **👥 Role-Based Access Control (RBAC):** Authorization with Admin, Product Manager (PM), and Developer roles.
-- **📋 Kanban Board:** Fluid task movement experience with Vanilla JavaScript and HTML5 Drag & Drop API.
-- **💬 In-Task Communication:** Real-time team commenting and discussion (Chat) system via custom modals triggered by clicking on task cards.
-- **🏢 Workspace Management:** Project creation, team member assignment, and project management.
-- **⚙️ Advanced Admin Console:** - Instantly change user permissions (roles).
-  - Suspend accounts without corrupting data when an employee leaves (Soft Delete / Deactivate).
-  - Archive deleted/closed projects and hide them from the dashboard.
-- **🎨 Modern Interface:** Fully responsive Dark Mode design built with Bootstrap 5.
+#### 4. Veritabanı Bağlantısını Yapılandırın
 
-## 🛠️ Technologies Used
+`config/db.php` dosyasını düzenleyin:
 
-**Frontend:**
-- HTML5 & CSS3
-- Bootstrap 5.3
-- Vanilla JavaScript (ES6+)
-- Fetch API (Asynchronous data communication)
+```php
+<?php
+$host = 'localhost';
+$db   = 'project_alpha';
+$user = 'root';        // MySQL kullanıcı adınız
+$pass = '';            // MySQL şifreniz
+$charset = 'utf8mb4';
 
-**Backend:**
-- PHP 8.x (Object-Oriented using PDO)
-- Architecture: Custom Router (via index.php) and Micro-Controller structure
+try {
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $pdo = new PDO($dsn, $user, $pass, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ]);
+} catch (PDOException $e) {
+    throw new PDOException($e->getMessage(), (int)$e->getCode());
+}
+```
 
-**Database:**
-- MySQL / MariaDB
-- Relational database design (Foreign Keys, Cascade Deletes)
+#### 5. İzinleri Ayarlayın (Linux/Mac)
 
-## 📁 Project Structure
+```bash
+chmod 755 -R project-alpha/
+chmod 777 -R project-alpha/public/uploads/  # Dosya yükleme kullanıyorsanız
+```
 
-```text
-project-alpha/
-│
-├── config/
-│   └── db.php                 # Database PDO connection settings
-│
-├── controllers/               # API files handling asynchronous (Fetch) operations
-│   ├── auth_process.php       # Login and registration processes
-│   ├── create_project.php     # New project creation and team assignment
-│   ├── update_task.php        # Kanban drag-and-drop status updates
-│   ├── add_comment.php        # Adding in-task comments
-│   ├── update_role.php        # (Admin) Changing user roles
-│   └── ...
-│
-├── public/
-│   ├── css/
-│   │   └── style.css          # Custom CSS and Dark Theme adjustments
-│   └── js/
-│       └── script.js          # Modal controls, Drag & Drop, and Fetch requests
-│
-├── views/                     # User interface files
-│   ├── login.php
-│   ├── register.php
-│   ├── dashboard.php          # Main page listing active projects
-│   ├── kanban.php             # Drag-and-drop task board
-│   ├── backlog.php            # Pending tasks list
-│   └── admin.php              # Authorized management console
-│
-├── database.sql               # Database tables and sample data (To be imported)
-└── index.php                  # Main Router and Security Middleware
+#### 6. Sunucuyu Başlatın
+
+```bash
+# PHP yerleşik sunucusunu kullanarak
+php -S localhost:8000
+
+# Veya XAMPP/MAMP üzerinden erişin:
+# http://localhost/project-alpha
+```
+
+---
+
+## ⚙️ Yapılandırma
+
+### Ortam Değişkenleri (İsteğe Bağlı)
+
+Kök dizinde `.env` dosyası oluşturun:
+
+```env
+DB_HOST=localhost
+DB_NAME=project_alpha
+DB_USER=root
+DB_PASS=sifreniz
+APP_ENV=development
+APP_URL=http://localhost:8000
+```
+
+### Güvenlik Ayarları
+
+- Oturum zaman aşımı: 30 dakika (`index.php`'de yapılandırılabilir)
+- Minimum şifre uzunluğu: 8 karakter
+- Tüm formlarda CSRF koruması etkin
+- SQL enjeksiyon önleme: hazır ifadeler (prepared statements)
+
+---
+
+## 💡 Kullanım
+
+### İlk Admin Hesabını Oluşturma
+
+> ⚠️ **Güvenlik Uyarısı:** Güvenlik nedeniyle doğrudan admin kaydına izin verilmez.
+
+1. **Web arayüzü üzerinden normal bir hesap** oluşturun
+2. **Veritabanınıza erişin** (phpMyAdmin veya MySQL CLI)
+3. **Kullanıcı rolünü güncelleyin:**
+
+```sql
+UPDATE users 
+SET system_role = 'admin' 
+WHERE email = 'eposta@ornek.com';
+```
+
+4. **Sayfayı yenileyin** — navigasyonda 🔴 **Admin Konsolu** butonu belirecektir
+
+### Kullanıcı İş Akışları
+
+#### 👑 Admin
+```
+Dashboard → Admin Konsolu → Kullanıcı/Proje Yönetimi
+```
+
+#### 📊 Product Manager
+```
+Dashboard → Proje Oluştur → Ekip Ata → İlerlemeyi İzle
+```
+
+#### 💻 Developer
+```
+Dashboard → Proje Seç → Kanban Panosu → Sürükle & Bırak Görevler → Yorum Yap
+```
+
+---
+
+## 🔌 API Uç Noktaları
+
+| Uç Nokta | Metod | Açıklama | Yetki Gerekli |
+|----------|--------|-------------|---------------|
+| `/controllers/auth_process.php` | POST | Giriş / Kayıt | Hayır |
+| `/controllers/create_project.php` | POST | Yeni proje oluştur | PM+ |
+| `/controllers/update_task.php` | POST | Görev durumunu güncelle | Dev+ |
+| `/controllers/add_comment.php` | POST | Göreve yorum ekle | Dev+ |
+| `/controllers/update_role.php` | POST | Kullanıcı rolünü değiştir | Admin |
+| `/controllers/archive_project.php` | POST | Projeyi arşivle | Admin |
+| `/controllers/deactivate_user.php` | POST | Kullanıcıyı soft delete | Admin |
+
+---
+
+## 🗄️ Veritabanı Şeması
+
+### Temel Tablolar
+
+```sql
+-- Kullanıcılar
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    system_role ENUM('admin', 'pm', 'developer') DEFAULT 'developer',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Projeler
+CREATE TABLE projects (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    created_by INT,
+    is_archived BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- Proje Üyeleri
+CREATE TABLE project_members (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT,
+    user_id INT,
+    role ENUM('owner', 'member') DEFAULT 'member',
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Görevler
+CREATE TABLE tasks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    status ENUM('todo', 'in_progress', 'done') DEFAULT 'todo',
+    priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+    assigned_to INT,
+    created_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- Yorumlar
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    task_id INT,
+    user_id INT,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+```
+
+---
+
+## 🔒 Güvenlik
+
+- ✅ **Şifre Hash'leme**: bcrypt, maliyet faktörü 12
+- ✅ **SQL Enjeksiyon Önleme**: PDO hazır ifadeleri
+- ✅ **XSS Koruması**: Tüm görünümlerde çıktı kodlama
+- ✅ **CSRF Token'ları**: Tüm durum değiştiren formlarda uygulandı
+- ✅ **Oturum Güvenliği**: ID yenileme, güvenli bayraklar, zaman aşımı
+- ✅ **Rol Doğrulama**: Her istekte sunucu tarafı yetki kontrolü
+- ✅ **Girdi Doğrulama**: Katı tip kontrolü ve sanitizasyon
+
+---
+
+## 🤝 Katkıda Bulunma
+
+Katkılarınızı bekliyoruz! Lütfen şu adımları izleyin:
+
+1. **Fork** yapın
+2. **Branch oluşturun**: `git checkout -b feature/harika-ozellik`
+3. **Değişiklikleri commit edin**: `git commit -m 'Harika özellik ekle'`
+4. **Branch'e push yapın**: `git push origin feature/harika-ozellik`
+5. **Pull Request açın**
+
+### Kod Standartları
+
+- PSR-12 kodlama standartlarını takip edin
+- Anlamlı değişken isimleri kullanın
+- Karmaşık mantığı yorumlayın
+- Güvenli kod yazın (tüm girdileri doğrulayın)
+
+---
+
+## 📝 Lisans
+
+Bu proje **MIT Lisansı** altında lisanslanmıştır — detaylar için [LICENSE](LICENSE) dosyasına bakın.
+
+Şunları yapmakta özgürsünüz:
+- ✅ Ticari kullanım
+- ✅ Değiştirme ve dağıtma
+- ✅ Özel kullanım
+- ✅ Alt lisanslama
+
+---
+
+## 🙏 Teşekkürler
+
+- [Bootstrap](https://getbootstrap.com) — Mükemmel UI framework'ü için
+- [Font Awesome](https://fontawesome.com) — İkonlar için
+- [GitHub](https://github.com) — Açık kaynağı barındırdığı için
+
+---
+
+<div align="center">
+
+**Yazılım ekipleri için ❤️ ile yapıldı**
+
+[⬆ Başa Dön](#-project-alpha)
+
+</div>
